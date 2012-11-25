@@ -62,6 +62,7 @@ private:
   ros::NodeHandle n_;
   ros::AsyncSpinner spinner;
   ros::Publisher raw_image_publisher_;
+  ros::Publisher cam_info_publisher_;
   ros::ServiceClient calibrate_service_;
 
   ros::ServiceServer set_camera_info_service_;
@@ -71,7 +72,7 @@ private:
   unsigned int nb_points_;
 
   vpVideoReader reader_;
-  vpImage<unsigned char> img_;
+  vpImage<vpRGBa> img_;
 
 
   /*!

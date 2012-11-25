@@ -82,6 +82,7 @@ Camera::Camera() :
   set_camera_info_service_ = n_.advertiseService(visp_camera_calibration::set_camera_info_service,set_camera_info_callback);
 
   raw_image_publisher_ = n_.advertise<sensor_msgs::Image>(visp_camera_calibration::raw_image_topic, queue_size_);
+  cam_info_publisher_ = n_.advertise<sensor_msgs::CameraInfo>("/camera_info", queue_size_);
 
   calibrate_service_ = n_.serviceClient<visp_camera_calibration::calibrate> (visp_camera_calibration::calibrate_service);
 
@@ -127,7 +128,13 @@ void Camera::sendVideo(){
     vpDisplay::displayCharString(img_,img_.getHeight()/2,img_.getWidth()/4,boost::str(boost::format("publishing frame %1% on %2%") % (i+1) % raw_image_publisher_.getTopic()).c_str(),vpColor::red);
     vpDisplay::flush(img_);
 
+    sensor_msgs::CameraInfo cam_info;
+    const std::string filename("/home/fnovotny/data/calibration.ini");
+    std::string cameraname("image");
+    camera_calibration_parsers::readCalibration(filename,cameraname,cam_info);
+
     raw_image_publisher_.publish(image);
+    cam_info_publisher_.publish(cam_info);
 
     ROS_INFO("Sending image %d/%d",i+1,(int)reader_.getLastFrameIndex());
     //vpDisplay::getClick(img_);
